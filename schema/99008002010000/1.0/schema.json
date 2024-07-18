@@ -2,8 +2,21 @@
     "type": "object",
     "$schema": "https://json-schema.org/draft-07/schema",
     "title": "Befreiung von der Ausweispflicht",
+    "properties": {
+        "handelndePerson": {"$ref": "#/definitions/handelndePerson"},
+        "antragstellendePerson": {"$ref": "#/definitions/antragstellendePerson"},
+        "ermessensgrundlageBefreiung": {"$ref": "#/definitions/ermessensgrundlageBefreiung"},
+        "willensbekundung": {"$ref": "#/definitions/zustimmungOptionaleAngaben"}
+    },
+    "required": [
+        "ermessensgrundlageBefreiung",
+        "handelndePerson",
+        "antragstellendePerson",
+        "willensbekundung"
+    ],
+    "additionalProperties": false,
     "definitions": {
-        "willensbekundung": {
+        "zustimmungOptionaleAngaben": {
             "title": "Datenschutzhinweis DSGVO",
             "type": "boolean",
             "description": "Basiert auf FIM-Baustein F17005454. Zustimmung der Verwendung optional gemachter Angaben."
@@ -412,19 +425,6 @@
                 "Vereinigtes Königreich"
             ]
         }
-    },
-    "properties": {
-        "handelndePerson": {"$ref": "#/definitions/handelndePerson"},
-        "antragstellendePerson": {"$ref": "#/definitions/antragstellendePerson"},
-        "ermessensgrundlageBefreiung": {"$ref": "#/definitions/ermessensgrundlageBefreiung"},
-        "zustimmungOptionaleAngaben": {"$ref": "#/definitions/zustimmungOptionaleAngaben"}
-    },
-    "required": [
-        "ermessensgrundlageBefreiung",
-        "handelndePerson",
-        "antragstellendePerson",
-        "zustimmungOptionaleAngaben"
-    ],
-    "additionalProperties": false
+    }
 }
 
