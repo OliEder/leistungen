@@ -1,0 +1,430 @@
+{
+    "type": "object",
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "Befreiung von der Ausweispflicht",
+    "definitions": {
+        "willensbekundung": {
+            "title": "Datenschutzhinweis DSGVO",
+            "type": "boolean",
+            "description": "Basiert auf FIM-Baustein F17005454. Zustimmung der Verwendung optional gemachter Angaben."
+        },
+        "handelndePerson": {
+            "title": "Handelnde Person (PAuswG)",
+            "type": "object",
+            "properties": {
+                "istAntragstellendePerson": {"$ref": "#/definitions/istAntragstellendePerson"},
+                "familiennamen": {"$ref": "#/definitions/familienname"},
+                "vornamen": {"$ref": "#/definitions/vornamen"},
+                "anschrift": {"$ref": "#/definitions/anschrift"},
+                "kommunikation": {"$ref": "#/definitions/kommunikation"}
+            },
+            "required": [
+                "istAntragstellendePerson",
+                "familiennamen",
+                "vornamen",
+                "anschrift",
+                "kommunikation"
+            ],
+            "description": "basiert auf G1700742. Alle Pflichtfelder wurden durch Bund.ID verifiziert.",
+            "additionalProperties": false
+        },
+        "istAntragstellendePerson": {
+            "title": "Ist die handelnde Person = Antragsteller? ",
+            "type": "string",
+            "description": "Basiert auf F17012146 der Type wurde angepasst. Die Values sind strings.",
+            "examples": [
+                "ja",
+                "nein"
+            ],
+            "enum": [
+                "ja",
+                "nein"
+            ]
+        },
+        "familienname": {
+            "title": "Familienname",
+            "description": "Laut BSI TR-03123 soll die Gesamtlänge für Familienname, Titel und Geburtsname nicht mehr als 120 Zeichen betragen. Laut PAuswV soll Name (Familienname und Geburtsname) nicht mehr als 2*26 = 52 Zeichen bzw. 3*40 = 120 Zeichen betragen.\nBasierend auf F60000227.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "examples": ["Mustermann"]
+        },
+        "vornamen": {
+            "title": "Vornamen",
+            "description": "Laut BSI TR-03123 soll Vorname <= 80 Zeichen betragen.\r\nLaut PAuswV soll Vorname nicht mehr als 26 Zeichen bzw. 2*40 = 80 Zeichen betragen. Basierend auf F60000228",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "examples": ["Claudia Melanie"]
+        },
+        "geburtsdatum": {
+            "type": "string",
+            "pattern": "^(19|2[0-1])\\d{2}-((0[13578]|1[02])-31|(0[1,3-9]|1[0-2])-(29|30))|((19|2[0-1])(0[48]|[2468][048]|[13579][26]))-02-29|(19|2[0-1])\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|1\\d|2[0-8])|2000-02-29|(19|2[0-1])\\d{2}-(0[1-9]|1[0-2])-00|(19|2[0-1])\\d{2}-00-00|0000-00-00|(19|2[0-1])\\d{2}-(0[1-9]|1[0-2])-XX|(19|2[0-1])\\d{2}-XX-XX|XXXX-XX-XX$",
+            "title": "Geburtsdatum",
+            "description": "Entspricht der Übermittlung des Geburtsdatum aus den Nutzerkonten. Es dürfen Tag oder Tag und Monat unbekannt sein. Sie werden dann mit Nullen aufgefüllt.",
+            "examples": [
+                "2010-00-00",
+                "2010-XX-XX",
+                "2010-01-00",
+                "2010-01-XX",
+                "2010-01-31",
+                "2010-01-31"
+            ]
+        },
+        "anschriftKomplett": {
+            "type": "string",
+            "title": "Internationale Anschrift",
+            "description": "Internationaler Adressblock in Abweichung von G60000091 zur kompatibiliät mit den Nutzerkonten",
+            "examples": ["ul. Grodzka 20/ 6 70-560 Szczecin"]
+        },
+        "anschriftInlandStrasse": {
+            "title": "Anschrift Inland Straßenanschrift",
+            "type": "object",
+            "properties": {
+              	"staat": {"const":"Deutschland"},
+                "strasseHausnummer": {"$ref": "#/definitions/strasseHausnummer"},
+                "plz": {"$ref": "#/definitions/plz"},
+                "ort": {"$ref": "#/definitions/ort"},
+                "adresszusatz": {"$ref": "#/definitions/adressZusatz"}
+            },
+            "required": [
+                "strasseHausnummer",
+                "plz",
+                "ort"
+            ],
+            "description": "Basierend auf G60000086. Mit der Abweichung, dass Strasse und Hausnummer zusammengefasst wurden, damit die Kompatiblilität mit den Nutzerkonten gewahrt bleibt.",
+            "additionalProperties": false
+        },
+        "strasseHausnummer": {
+            "title": "Straße",
+            "description": "Basierend auf F60000243 kombiniert aber F60000243 mit Hausnummer F60000244, um Kompatibilität mit den Nutzkontne zu erhalten. Kompatibilität zu EPA in TR XhD v 1.4 sollte Feldlänge min. 50. Bei XInneres 8 ist die Feldlänge <= 55 Zeichen.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 66,
+            "examples": [
+                "Musterstr. 12a",
+                "E 4, 6"
+            ]
+        },
+        "adressZusatz": {
+            "title": "Anschrift Zusatzangaben",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 21,
+            "description": "Basierend auf F60000248.",
+            "examples": ["Hinterhaus rechts"]
+        },
+        "plz": {
+            "title": "Postleitzahl",
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^([0]{1}[1-9]{1}|[1-9]{1}[0-9]{1})[0-9]{3}$",
+            "description": "Basierend auf F60000246",
+            "examples": [10999]
+        },
+        "ort": {
+            "title": "Ort",
+            "description": "Basierend auf F60000247. Kompatibilität zu EPA in TR XhD v 1.4 sollte Feldlänge min. 44. Laut PAuswV 2*25 = 50 Zeichen. Laut Xinneres.Meldeanschrift.Wohnort Version 8 = 40 Zeichen.\r\nLaut BSI TR-03123 kleiner gleich 105 Zeichen.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "examples": [
+                "Berlin",
+                "Hamburg",
+                "Lüneburg",
+                "Mannheim"
+            ]
+        },
+        "kommunikation": {
+            "title": "Kommunikation (wenig, ohne De-Mail)",
+            "description": "G60000183. In dieser Datenfeldgruppe wird per Regel gefordert, dass mindestens eine Kommunikationsmöglichkeit angegeben werden muss. Falls es gewünscht ist, dass keine Kommunikationsmöglichkeit angegeben werden braucht, muss die ganze Feldgruppe bei der Verwendung optional gesetzt werden.",
+            "type": "object",
+            "properties": {
+                "telefon": {"$ref": "#/definitions/telefon"},
+                "telefax": {"$ref": "#/definitions/telefax"},
+                "email": {"$ref": "#/definitions/email"}
+            },
+            "required": ["telefon"],
+            "additionalProperties": false
+        },
+        "telefon": {
+            "title": "Telefon",
+            "description": "Basierend auf F60000240. Dieses Feld wurde angelehnt an ITU E.123. Eine Prüfung über ein Pattern erfolgt nicht, um den Eingebenden nicht zu überfordern.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 23,
+            "examples": [
+                "+491234342567",
+                "01718765463"
+            ]
+        },
+        "telefax": {
+            "title": "Telefax",
+            "description": "Basierened auf F60000241. Dieses Feld wurde angelehnt an ITU E.123. Eine Prüfung über ein Pattern erfolgt nicht, um den Eingebenden nicht zu überfordern.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 23,
+            "examples": [
+                "+4917112345678",
+                "00493012345678",
+                "030123456789"
+            ]
+        },
+        "email": {
+            "title": "E-Mail",
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 254,
+            "pattern": "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{1,63}$",
+            "description": "Basiert auf F60000242",
+            "examples": [
+                "example@test.de",
+                "beispiel@demo.com"
+            ]
+        },
+        "antragstellendePerson": {
+            "title": "Antragsstellende Person (PAuswG)",
+            "type": "object",
+            "properties": {
+                "vorname": {"$ref": "#/definitions/vornamen"},
+                "familienname": {"$ref": "#/definitions/familienname"},
+                "geburtsdatum": {"$ref": "#/definitions/geburtsdatum"},
+                "geburtsort": {"$ref": "#/definitions/geburtsort"},
+                "anschrift": {"$ref": "#/definitions/anschrift"}
+            },
+            "required": [
+                "vorname",
+                "familienname",
+                "geburtsdatum",
+                "geburtsort",
+                "anschrift"
+            ],
+            "description": "Basiert auf G17007419",
+            "additionalProperties": false
+        },
+        "geburtsort": {
+            "title": "Geburtsort",
+            "description": "Basiert auf F60000234. Laut BSI TR-03123 soll Geburtsort <= 80 Zeichen betragen. Laut PAuswV soll Geburtsort nicht mehr als 26 Zeichen bzw. 2*40 = 80 Zeichen betragen.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "examples": [
+                "München",
+                "Berlin",
+                "Lyon"
+            ]
+        },
+        "ermessensgrundlageBefreiung": {
+            "title": "Basierend auf G17007420. Ermessungsgrundlage Befreiung (PAuswG)",
+            "type": "object",
+            "properties": {
+                "begruendung": {"$ref": "#/definitions/begruendung"},
+                "handlungsunfaehigkeit": {"$ref": "#/definitions/handlungsunfaehigkeit"},
+                "unterbringung": {"$ref": "#/definitions/unterbringung"},
+                "dauerhafteBehinderung": {"$ref": "#/definitions/upload"}
+            },
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                      	"begruendung": {"const":"001"},
+                        "handlungsunfaehigkeit": {"$ref": "#/definitions/handlungsunfaehigkeit"}
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                      	"begruendung": {"const":"002"},"unterbringung": {"$ref": "#/definitions/unterbringung"}
+                    },
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                      	"begruendung": {"const":"003"},
+                        "dauerhafteBehinderung": {
+                            "$ref": "#/definitions/upload",
+                            "title": "Nachweis einer dauerhaften Behinderung (PAuswG)",
+                            "description": "Basiert auf G17007423. Enthält die Nachweise die für LeiKa-Schlüssel 99008002010003 notwendig sind. Und auf PAuswG §1 Abs.3 Nr. 3 abziehlen."
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ],
+            "required": ["begruendung"],
+            "additionalProperties": false
+        },
+        "begruendung": {
+            "title": "Ermessungsgrundlage Befreiung auswählen (PAuswG)",
+            "type": "string",
+            "enum": [
+                "001",
+                "002",
+                "003"
+            ],
+            "description": "Basiert auf F17012136\nGrundlage nach Personalausweisgesetz §1 Abs. 3.\n001 entspricht Leika-Schlüssel 99008002010001 betreute Personen\n002 entspricht Leika-Schlüssel 99008002010002 dauerhaft untergebrachte Personen\n003 entspricht Leika-Schlüssel 99008002010003 dauerhaft behinderte Personen, die sich nicht allein in der Öffentlichkeit bewegen können "
+        },
+        "handlungsunfaehigkeit": {
+            "title": "Handlungsunfähigkeit nachweisen (PAuswG)",
+            "type": "object",
+            "properties": {
+                "betreuer": {
+                    "$ref": "#/definitions/upload",
+                    "title": "Betreuerausweis hochladen (PAuswG)",
+                    "description": "basiert auf F17012137 wird aber als File-Referenz und nicht als Base64 umgesetzt."
+                },
+                "vorsorgevollmacht": {
+                    "$ref": "#/definitions/upload",
+                    "title": "Vorsorgevollmacht hochladen (PAuswG)",
+                    "description": "basiert auf F17012138 wird aber als File-Referenz und nicht als Base64 umgesetzt"
+                }
+            },
+            "description": "Basiert auf G17007421. Enthält die Nachweise die für LeiKa-Schlüssel 99008002010003 notwendig sind. Und auf PAuswG §1 Abs.3 Nr. 1 abziehlen.",
+            "additionalProperties": false
+        },
+        "unterbringung": {
+            "title": "Dauerhaft in Pfege-/Krankenhaus untergebracht nachweisen (PAuswG)",
+            "type": "object",
+            "properties": {
+                "annerkanntesPflegeheim": {
+                    "$ref": "#/definitions/annerkanntesPflegeheim",
+                    "title": "Anerkanntes Pflegeheim? (PAuswG)",
+                    "description": "basiert auf F17012140"
+                },
+                "aufnahmebestaetigung": {
+                    "$ref": "#/definitions/upload",
+                    "title": "Aufnahmebestätigung Krankenhaus oder Pflegeheim hochladen (PAuswG)",
+                    "description": "basiert auf F17012139 wird aber als File-Referenz und nicht als Base64 umgesetzt."
+                },
+                "nachweisPflegestufe": {
+                    "$ref": "#/definitions/upload",
+                    "title": "Pflegestufe Nachweis hochladen (PAuswG)",
+                    "description": "basiert auf F17012139 wird aber als File-Referenz und nicht als Base64 umgesetzt."
+                }
+            },
+            "required": ["annerkanntesPflegeheim"],
+            "description": "Basiert auf G17007423. Enthält die Nachweise die für LeiKa-Schlüssel 99008002010002 notwendig sind. Und auf PAuswG §1 Abs.3 Nr. 2 abziehlen.",
+            "additionalProperties": false
+        },
+        "annerkanntesPflegeheim": {
+            "title": "Anerkanntes Pflegeheim? (PAuswG)",
+            "type": "string",
+            "description": "basiert auf F17012140 wird aber als File-Referenz und nicht als Base64 umgesetzt.",
+            "enum": [
+                "ja",
+                "nein"
+            ]
+        },
+        "upload": {
+            "type": "object",
+            "properties": {
+                "documentId": {"$ref": "#/definitions/documentId"},
+                "originalName": {"$ref": "#/definitions/originalName"},
+                "size": {"$ref": "#/definitions/size"},
+                "type": {"$ref": "#/definitions/mimeType"}
+            },
+            "required": [
+                "originalName",
+                "size",
+                "type",
+                "documentId"
+            ],
+            "additionalProperties": true
+        },
+        "documentId": {
+            "type": "string",
+            "title": "Eindeutige ID des hochgeladenen Dokumentes",
+            "description": "Eindeutige ID des hochgeladenen Dokumentes zur Identifikation in den Anhängen",
+            "examples": ["c8859076-76de-41b4-914c-048f84cd9685"]
+        },
+        "originalName": {
+            "type": "string",
+            "title": "Originaler Dateiname",
+            "description": "Enthält den Dateinamen, der Ursprünglich von Antragsteller hochgeladenen Datei.",
+            "examples": [
+                "nachweis.jpg",
+                "betreuerausweis.pdf",
+                "vorsorgevollmacht.png"
+            ]
+        },
+        "mimeType": {
+            "type": "string",
+            "title": "Mime Type",
+            "examples": [
+                "application/pdf",
+                "image/gif",
+                "image/jpeg",
+                "image/png"
+            ]
+        },
+        "size": {
+            "type": "integer",
+            "title": "Größe der Datei",
+            "description": "Enthält die Größe der Datein in Byte",
+            "examples": [
+                1,
+                1254678,
+                124
+            ]
+        },
+        "anschrift": {
+            "title": "Anschrift Inland oder Ausland mit Frage",
+            "description": "Zu beachten: wird die Anschrift im Kontext der Online-Ausweisfunktion des neuen Personalausweis verwendet, können nur Personen mit Anschriften in Deutschland authentisiert werden (siehe auch https://www.personalausweisportal.de/DE/Buergerinnen-und-Buerger/Online-Ausweisen/Wohnsitz_im_Ausland/wohnsitz_im_ausland_node.html). Bei der Umsetzung müssen somit ausländische Anschriften ausgeschlossen werden.",
+            "type": "object",
+            "properties": {
+                "staat": {"$ref": "#/definitions/staat"},
+                "strasseHausnummer": {"$ref": "#/definitions/strasseHausnummer"},
+                "plz": {"$ref": "#/definitions/plz"},
+                "ort": {"$ref": "#/definitions/ort"},
+                "adresszusatz": {"$ref": "#/definitions/adressZusatz"},
+                "anschriftKomplett": {"$ref": "#/definitions/anschriftKomplett"}
+            },
+            "oneOf": [
+                {"$ref": "#/definitions/anschriftInlandStrasse"},
+                {
+                    "type": "object",
+                    "properties": {
+                        "staat": {
+                            "not": {"const": "Deutschland"}
+                        },
+                        "anschriftKomplett": {"$ref": "#/definitions/anschriftKomplett"}
+                    },
+                    "required": [
+                        "staat",
+                        "anschriftKomplett"
+                    ],
+                    "additionalProperties": false
+                }
+            ],
+            "required": ["staat"],
+            "additionalProperties": false
+        },
+        "staat": {
+            "type": "string",
+            "title": "Staat",
+            "description": "Entspricht dem FIM-Baustein F60000261. Die Werte entsprechen der amtlichen Kurzform des Staatsnamen aus der Codeliste (urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:staat)",
+            "examples": [
+                "Deutschland",
+                "Frankreich",
+                "Polen",
+                "Vereinigtes Königreich"
+            ]
+        }
+    },
+    "properties": {
+        "handelndePerson": {"$ref": "#/definitions/handelndePerson"},
+        "antragstellendePerson": {"$ref": "#/definitions/antragstellendePerson"},
+        "ermessensgrundlageBefreiung": {"$ref": "#/definitions/ermessensgrundlageBefreiung"},
+        "zustimmungOptionaleAngaben": {"$ref": "#/definitions/zustimmungOptionaleAngaben"}
+    },
+    "required": [
+        "ermessensgrundlageBefreiung",
+        "handelndePerson",
+        "antragstellendePerson",
+        "zustimmungOptionaleAngaben"
+    ],
+    "additionalProperties": false
+}
+
