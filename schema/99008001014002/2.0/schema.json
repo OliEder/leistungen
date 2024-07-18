@@ -1,0 +1,504 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "Meldung des Verlustes oder Diebstahles eines Ausweisdokuments",
+    "properties": {
+        "handelndePerson": {
+            "$ref": "#/definitions/handelndePerson",
+            "title": "Gesetzlicher Vertreter - Natürliche Person (wenig)",
+            "description": "Basiert auf dem Baustein G17007412 \"Antragstellende Person \". \nHier werden alle Daten der handelnden Person erfasst. Nur sie kann im Online-Dienst mittels Bund.ID authentifiziert werden. Mit Ausnahme der Kontaktdaten und der Beziehung zur antragstellenden Person werden hier nur Daten übermittelt, die mindestens mit der Vertrauensstufe \"niedrig\" verifiziert sind. "
+        },
+        "antragstellendePerson": {
+            "$ref": "#/definitions/antragstellendePerson",
+            "title": "Antragstellende Person - Natürliche Person (wenig, PAuswG)",
+            "description": "Basiert auf dem Baustein G17007412.\nDies sind die Daten der Person, der das Dokument gehört und in deren Registereintrag die Meldung erfolgen soll.\nWenn die handelnde Person nicht mit dieser Person identisch ist, können die eingegebenen Daten vom Dokument abweichen."
+        },
+        "dokument": {
+            "$ref": "#/definitions/dokument",
+            "title": "Angaben Ausweisdokument",
+            "description": "Basiert auf G17007413.\nHier werden alle dokumentenspezifischen Daten erfasst. Der hier aufgeführte Status ist der Soll-Status. Er definiert die genaue Durchführung."
+        },
+        "meldung": {
+            "$ref": "#/definitions/meldung",
+            "title": "Angaben zur Meldung des Verlustes bzw. Diebstahls",
+            "description": "Es werden alle Daten verfasst, die ggf. in einer Nachricht an eine weitere Behörde benötigt werden. "
+        },
+        "willensbekundung": {"$ref": "#/definitions/zustimmungOptionaleAngaben"}
+    },
+    "additionalProperties": false,
+    "required": [
+        "handelndePerson",
+        "antragstellendePerson",
+        "dokument",
+        "meldung",
+        "willensbekundung"
+    ],
+    "definitions": {
+        "status": {
+            "type": "string",
+            "title": "Status des Dokuments (PAuswG)",
+            "enum": [
+                "gestohlen",
+                "verloren"
+            ],
+            "description": "Hier wird der Status des Dokuments direkt übergeben. Der Status definiert gleichzeitig die Ausführung des Dienstes, wobei \"gestohlen\" der \" Meldung eines Diebstahls des Personalausweises\" und \"verloren\" der \" Meldung eines Verlustes des Personalausweises\" entspricht. \nGrundlagen sind hier das PAuswG und\nGrundlage ist die folgende Codeliste:\nurn:xoev-de:xpassausweis:codeliste:mitzug.dokumentstatus\nEs werden jedoch nur die beiden Status \"04\" \"verloren\" und \"10\" \"gestohlen\" verwendet."
+        },
+        "meldung": {
+            "type": "object",
+            "title": "Meldung",
+            "description": "Umfasst alle Angaben zur Meldung, dazu gehören Art, Datum, Ort und Hergang",
+            "properties": {
+                "anfang": {"$ref": "#/definitions/anfang"},
+                "ende": {"$ref": "#/definitions/ende"},
+                "ort": {"$ref": "#/definitions/ort"},
+                "umstaende": {"$ref": "#/definitions/umstaende"},
+                "anzeige": {"$ref": "#/definitions/anzeige"}
+            },
+            "required": [
+                "anfang",
+                "ort",
+                "umstaende"
+            ],
+            "additionalProperties": false
+        },
+        "anfang": {
+            "type": "string",
+            "title": "Anfang",
+            "format": "date",
+            "description": "Entspricht dem FIM-Baustein F60000048 Anfang.\nEs wird das Anfangsdatum eines Zeitraumes definiert."
+        },
+        "ende": {
+            "type": "string",
+            "title": "Ende",
+            "format": "date",
+            "description": "Entspricht dem FIM Baustein F60000049.\nEs wird das Ende eines Zeitraums definiert."
+        },
+        "umstaende": {
+            "type": "string",
+            "title": "Umstände des Verlusts/Diebstahls",
+            "maxLength": 1500,
+            "description": "Basiert auf FIM-Baustein F17012135.\nDient zur Übermittlung an die jeweiligen Polizeidienststellen.",
+            "examples": ["Der Ausweis wurde in der U-Bahn in Richtung Harburg zusammen mit dem gesamten Geldbeutel verloren."]
+        },
+        "anzeige": {
+            "type": "object",
+            "properties": {
+                "datumDerAnzeige": {
+                    "$ref": "#/definitions/datum",
+                    "title": "Datum der Anzeige",
+                    "description": "Entspricht dem FIM-Baustein F60000030 \"Datum\".\nHier wird der Tag der Anzeige erfasst."
+                },
+                "dienststelle": {"$ref": "#/definitions/dienststelle"}
+            },
+            "title": "Anzeige",
+            "description": "Basiert auf G17007418.\nAngaben zur polizeilichen Anzeige eines Verlusts oder Diebstahls.",
+            "additionalProperties": false
+        },
+        "dienststelle": {
+            "type": "string",
+            "title": "Dienststelle (PAuswG)",
+            "description": "Basiert auf F60000292 \"Ausstellende Behörde\" und erfasst die Polizeidienststelle, bei der die Anzeige erstattet wurde.",
+            "examples": [
+                "Polizeikommissariat 15, Davidwache",
+                "Polizeikommissariat 14"
+            ]
+        },
+        "datum": {
+            "type": "string",
+            "title": "Datum",
+            "format": "date",
+            "description": "Entspricht dem FIM-Baustein F60000030 \"Datum\"."
+        },
+        "ausstellendeBehoerde": {
+            "type": "string",
+            "title": "Ausstellende Behörde Name",
+            "description": "Feldlänge orientiert sich an Behoerdenname.Kurzbezeichnung Tabelle 9 BSI TR-03123 Version 1.5.1",
+            "pattern": "([\u0009-\u000A]|\u000D|[\u0020-\u007E]|[\u00A0-\u00AC]|[\u00AE-\u017E]|[\u0187-\u0188]|\u018F|\u0197|[\u01A0-\u01A1]|[\u01AF-\u01B0]|\u01B7|[\u01CD-\u01DC]|[\u01DE-\u01DF]|[\u01E2-\u01F0]|[\u01F4-\u01F5]|[\u01F8-\u01FF]|[\u0212-\u0213]|[\u0218-\u021B]|[\u021E-\u021F]|[\u0227-\u0233]|\u0259|\u0268|\u0292|[\u02B9-\u02BA]|[\u02BE-\u02BF]|\u02C8|\u02CC|[\u1E02-\u1E03]|[\u1E06-\u1E07]|[\u1E0A-\u1E11]|[\u1E1C-\u1E2B]|[\u1E2F-\u1E37]|[\u1E3A-\u1E3B]|[\u1E40-\u1E49]|[\u1E52-\u1E5B]|[\u1E5E-\u1E63]|[\u1E6A-\u1E6F]|[\u1E80-\u1E87]|[\u1E8C-\u1E97]|\u1E9E|[\u1EA0-\u1EF9]|\u2019|\u2021|\u20AC|\u0041\u030B|\u0043(\u0300|\u0304|\u0306|\u0308|\u0315|\u0323|\u0326|\u0328\u0306)|\u0044\u0302|\u0046(\u0300|\u0304)|\u0047\u0300|\u0048(\u0304|\u0326|\u0331)|\u004A(\u0301|\u030C)|\u004B(\u0300|\u0302|\u0304|\u0307|\u0315|\u031B|\u0326|\u035F\u0048|\u035F\u0068)|\u004C(\u0302|\u0325|\u0325\u0304|\u0326)|\u004D(\u0300|\u0302|\u0306|\u0310)|\u004E(\u0302|\u0304|\u0306|\u0326)|\u0050(\u0300|\u0304|\u0315|\u0323)|\u0052(\u0306|\u0325|\u0325\u0304)|\u0053(\u0300|\u0304|\u031B\u0304|\u0331)|\u0054(\u0300|\u0304|\u0308|\u0315|\u031B)|\u0055\u0307|\u005A(\u0300|\u0304|\u0306|\u0308|\u0327)|\u0061\u030B|\u0063(\u0300|\u0304|\u0306|\u0308|\u0315|\u0323|\u0326|\u0328\u0306)|\u0064\u0302|\u0066(\u0300|\u0304)|\u0067\u0300|\u0068(\u0304|\u0326)|\u006A\u0301|\u006B(\u0300|\u0302|\u0304|\u0307|\u0315|\u031B|\u0326|\u035F\u0068)|\u006C(\u0302|\u0325|\u0325\u0304|\u0326)|\u006D(\u0300|\u0302|\u0306|\u0310)|\u006E(\u0302|\u0304|\u0306|\u0326)|\u0070(\u0300|\u0304|\u0315|\u0323)|\u0072(\u0306|\u0325|\u0325\u0304)|\u0073(\u0300|\u0304|\u031B\u0304|\u0331)|\u0074(\u0300|\u0304|\u0315|\u031B)|\u0075\u0307|\u007A(\u0300|\u0304|\u0306|\u0308|\u0327)|\u00C7\u0306|\u00DB\u0304|\u00E7\u0306|\u00FB\u0304|\u00FF\u0301|\u010C(\u0315|\u0323)|\u010D(\u0315|\u0323)|\u012A\u0301|\u012B\u0301|\u017D(\u0326|\u0327)|\u017E(\u0326|\u0327)|\u1E32\u0304|\u1E33\u0304|\u1E62\u0304|\u1E63\u0304|\u1E6C\u0304|\u1E6D\u0304|\u1EA0\u0308|\u1EA1\u0308|\u1ECC\u0308|\u1ECD\u0308|\u1EE4(\u0304|\u0308)|\u1EE5(\u0304|\u0308))*",
+            "minLength": 1,
+            "maxLength": 84
+        },
+        "dokumententyp": {
+            "type": "string",
+            "title": "Art des Dokuments",
+            "description": "| Code | Dokument |\n|---|---|\n| 01 | Deutscher Reisepass |\n| 03 | Deutscher Kinderreisepass |\n| 09 | Personalausweis |\n| 10 | Vorläufiger Personalausweis |\n| 11 | Deutscher vorläufiger Reisepass |\n| 15 | eID-Karte |\n\nNach Codeliste xmeld:Code.Pass.und.Ausweisdokumente",
+            "enum": [
+                "reisepass",
+                "personalausweis",
+                "kinderreisepass",
+                "eIdKarte",
+                "vorlaufigerReisepass",
+                "vorlaufigerPersonalausweis"
+            ]
+        },
+        "seriennummer": {
+            "type": "string",
+            "title": "Seriennummer",
+            "minLength": 9,
+            "pattern": "([A-Z]{1}[ ]{1}[0-9]{8})|([CFGHJKLMNPRTVWXYZ0-9]{9,10})",
+            "maxLength": 10,
+            "examples": [
+                "L30F30CLN",
+                "A 12345678",
+                "B 87654321",
+                "C 23456789",
+                "D 98765432",
+                "E 34567890",
+                "CFGHJKLMN",
+                "PRTVWXYZ1",
+                "2CFGHJKLM",
+                "NPRTVWXYZ",
+                "WXYZ01234",
+                "CFGHJKLMNP",
+                "1234567890",
+                "RTVWXYZ012",
+                "34567JKLMN",
+                "PRTVWXYZ12"
+            ]
+        },
+        "dokument": {
+            "type": "object",
+            "title": "Angaben Ausweisdokument",
+            "properties": {
+                "typ": {
+                    "$ref": "#/definitions/dokumententyp",
+                    "title": "Art des Dokuments"
+                },
+                "status": {"$ref": "#/definitions/status"},
+                "seriennummer": {
+                    "$ref": "#/definitions/seriennummer",
+                    "title": "Seriennummer"
+                },
+                "tagDerAusstellung": {
+                    "$ref": "#/definitions/datum",
+                    "title": "Ausstelldatum"
+                },
+                "letzterTagDerGueltigkeit": {
+                    "$ref": "#/definitions/datum",
+                    "title": "Ablaufdatum"
+                },
+                "ausstellendeBehoerde": {
+                    "$ref": "#/definitions/ausstellendeBehoerde",
+                    "title": "Ausstellende Behörde"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "status",
+                "typ"
+            ],
+            "description": "Basiert auf G17007413.\nHier werden alle dokumentenspezifischen Daten erfasst. Der hier aufgeführte Status ist der Soll-Status. Er definiert die genaue Durchführung."
+        },
+        "staat": {
+            "type": "string",
+            "title": "Staat",
+            "description": "Entspricht dem FIM-Baustein F60000261. Die Werte entsprechen der amtlichen Kurzform des Staatsnamen aus der Codeliste (urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:staat)",
+            "examples": [
+                "Deutschland",
+                "Frankreich",
+                "Polen",
+                "Vereinigtes Königreich"
+            ]
+        },
+        "zustimmungOptionaleAngaben": {
+            "title": "Datenschutzhinweis DSGVO",
+            "type": "boolean",
+            "description": "Basiert auf FIM-Baustein F17005454. Zustimmung der Verwendung optional gemachter Angaben."
+        },
+        "handelndePerson": {
+            "title": "Handelnde Person (PAuswG)",
+            "type": "object",
+            "properties": {
+                "beziehungZumAntragsteller": {"$ref": "#/definitions/beziehungZumAntragsteller"},
+                "nachweis": {
+                    "$ref": "#/definitions/upload",
+                    "title": "Nachweis der Handlungsbefugnis.",
+                    "description": "Handelt es sich bei der handelnden Person um eine Person, die ggf. nicht im Melderegister eingetragen ist (Vorsorgebevollmächtigter oder gerichtlich bestellter Betreuer), ist ein Nachweis zur Überprüfung der Handlungsvollmacht erforderlich. Dies erfordert immer eine manuelle Prüfung."
+                },
+                "familienname": {"$ref": "#/definitions/familienname"},
+                "vornamen": {"$ref": "#/definitions/vornamen"},
+                "anschrift": {"$ref": "#/definitions/anschrift"},
+                "kommunikation": {"$ref": "#/definitions/kommunikation"}
+            },
+            "required": [
+                "beziehungZumAntragsteller",
+                "familienname",
+                "vornamen",
+                "anschrift",
+                "kommunikation"
+            ],
+            "description": "basiert auf G1700742. Alle Pflichtfelder wurden durch Bund.ID verifiziert.",
+            "additionalProperties": false
+        },
+        "beziehungZumAntragsteller": {
+            "type": "string",
+            "title": "Beziehung zur Antragstellenden Person",
+            "description": "Basiert auf der CodeListe für gesetzliche Vertreter aus DSMeld bzw. XMeld. \nSie wurde um die meldepflichtige Person (kein gesetzlicher Vertreter) erweitert und etwas vereinfacht. So ist z.B. die geschlechtsspezifische Aufschlüsselung für erziehungsberechtigte Personen nicht mehr zeitgemäß. \n0 - keine (handelnde Person entspricht dem Antragsteller)\n2 - Mutter (wird generell für alle erziehungsberechtigten Personen verwendet). Es ist kein weiterer Nachweis erforderlich, da erziehungsberechtigte Personen immer in den Meldedaten gespeichert sind.\n3 - Gesetzlicher Vertreter (natürliche Person). Hier sind vor allem Vorsorgebevollmächtigte und gerichtlich bestellte Betreuer gemeint, da für diese Personen ein weiterer Nachweis erforderlich ist.",
+            "enum": [
+                "0",
+                "2",
+                "5"
+            ],
+            "default": 0
+        },
+        "familienname": {
+            "title": "Familienname",
+            "description": "Laut BSI TR-03123 soll die Gesamtlänge für Familienname, Titel und Geburtsname nicht mehr als 120 Zeichen betragen. Laut PAuswV soll Name (Familienname und Geburtsname) nicht mehr als 2*26 = 52 Zeichen bzw. 3*40 = 120 Zeichen betragen.\nBasierend auf F60000227.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "examples": [
+                "Mustermann",
+                "Musterfrau",
+                "Meier",
+                "Schmidt",
+                "Mohammad"
+            ]
+        },
+        "vornamen": {
+            "title": "Vornamen",
+            "description": "Laut BSI TR-03123 soll Vorname <= 80 Zeichen betragen.\r\nLaut PAuswV soll Vorname nicht mehr als 26 Zeichen bzw. 2*40 = 80 Zeichen betragen. Basierend auf F60000228",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "examples": [
+                "Claudia",
+                "Melanie",
+                "Ali",
+                "Nick David"
+            ]
+        },
+        "geburtsdatum": {
+            "type": "string",
+            "pattern": "^(19|2[0-1])\\d{2}-((0[13578]|1[02])-31|(0[1,3-9]|1[0-2])-(29|30))|((19|2[0-1])(0[48]|[2468][048]|[13579][26]))-02-29|(19|2[0-1])\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|1\\d|2[0-8])|2000-02-29|(19|2[0-1])\\d{2}-(0[1-9]|1[0-2])-00|(19|2[0-1])\\d{2}-00-00|0000-00-00|(19|2[0-1])\\d{2}-(0[1-9]|1[0-2])-XX|(19|2[0-1])\\d{2}-XX-XX|XXXX-XX-XX$",
+            "title": "Geburtsdatum",
+            "description": "Entspricht der Übermittlung des Geburtsdatum aus den Nutzerkonten. Es dürfen Tag oder Tag und Monat unbekannt sein. Sie werden dann mit Nullen aufgefüllt.",
+            "examples": [
+                "2010-00-00",
+                "2010-XX-XX",
+                "2010-01-00",
+                "2010-01-XX",
+                "2010-01-31",
+                "2010-01-31"
+            ]
+        },
+        "anschrift": {
+            "title": "Anschrift Inland oder Ausland mit Frage",
+            "description": "Zu beachten: wird die Anschrift im Kontext der Online-Ausweisfunktion des neuen Personalausweis verwendet, können nur Personen mit Anschriften in Deutschland authentisiert werden (siehe auch https://www.personalausweisportal.de/DE/Buergerinnen-und-Buerger/Online-Ausweisen/Wohnsitz_im_Ausland/wohnsitz_im_ausland_node.html). Bei der Umsetzung müssen somit ausländische Anschriften ausgeschlossen werden.",
+            "type": "object",
+            "properties": {
+                "staat": {"$ref": "#/definitions/staat"},
+                "strasseHausnummer": {"$ref":"#/definitions/strasseHausnummer"},
+                "plz": {"$ref": "#/definitions/plz"},
+                "ort": {"$ref": "#/definitions/ort"},
+                "adresszusatz": {"$ref": "#/definitions/adressZusatz"},
+                "anschriftKomplett": {"$ref": "#/definitions/anschriftKomplett"} 
+            },
+            "oneOf": [
+                {"$ref": "#/definitions/anschriftInlandStrasse"},
+                {
+                    "type": "object",
+                    "properties": {
+                        "staat": {"not":{"const": "Deutschland"}},
+                        "anschriftKomplett": {"$ref": "#/definitions/anschriftKomplett"}
+                    },
+                    "required": ["staat","anschriftKomplett"],
+                    "additionalProperties": false
+                }
+            ],
+            "required": ["staat"],
+            "additionalProperties": false
+        },
+        "anschriftKomplett": {
+            "type": "string",
+            "title": "Internationale Anschrift",
+            "description": "Internationaler Adressblock in Abweichung von G60000091 zur kompatibiliät mit den Nutzerkonten",
+            "examples": [
+                "ul. Grodzka 20/ 6, 70-560, Szczecin",
+                "10 bis Rue de la Paix, 75002 Paris",
+                "Via Roma, Frazione Santa Maria, 12050 Alba CN",
+                "Calle de Alcalá, 45, 2º D, 28014 Madrid",
+                "Prinsengracht 267A, 1016 GV Amsterdam",
+                "1 St. Stephen's Green, Dublin 2, D02 AF30",
+                "Bahnhofstrasse 1, 8001 Zürich, Geschäftsgebäude 2"
+            ]
+        },
+        "anschriftInlandStrasse": {
+            "title": "Anschrift Inland Straßenanschrift",
+            "type": "object",
+            "properties": {
+                "staat": {"const":"Deutschland"},
+                "strasseHausnummer": {"$ref": "#/definitions/strasseHausnummer"},
+                "plz": {"$ref": "#/definitions/plz"},
+                "ort": {"$ref": "#/definitions/ort"},
+                "adresszusatz": {"$ref": "#/definitions/adressZusatz"}
+            },
+            "required": [
+                "staat",
+                "strasseHausnummer",
+                "plz",
+                "ort"
+            ],
+            "description": "Basierend auf G60000086. Mit der Abweichung, dass Strasse und Hausnummer zusammengefasst wurden, damit die Kompatiblilität mit den Nutzerkonten gewahrt bleibt.",
+            "additionalProperties": false
+        },
+        "strasseHausnummer": {
+            "title": "Straße",
+            "description": "Basierend auf F60000243 kombiniert aber F60000243 mit Hausnummer F60000244, um Kompatibilität mit den Nutzkontne zu erhalten. Kompatibilität zu EPA in TR XhD v 1.4 sollte Feldlänge min. 50. Bei XInneres 8 ist die Feldlänge <= 55 Zeichen.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 66,
+            "examples": [
+                "Musterstr. 12a",
+                "E 4, 6"
+            ]
+        },
+        "adressZusatz": {
+            "title": "Anschrift Zusatzangaben",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 21,
+            "description": "Basierend auf F60000248.",
+            "examples": ["Hinterhaus rechts"]
+        },
+        "plz": {
+            "title": "Postleitzahl",
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^([0]{1}[1-9]{1}|[1-9]{1}[0-9]{1})[0-9]{3}$",
+            "description": "Basierend auf F60000246",
+            "examples": [10999]
+        },
+        "ort": {
+            "title": "Ort",
+            "description": "Basierend auf F60000247. Kompatibilität zu EPA in TR XhD v 1.4 sollte Feldlänge min. 44. Laut PAuswV 2*25 = 50 Zeichen. Laut Xinneres.Meldeanschrift.Wohnort Version 8 = 40 Zeichen.\r\nLaut BSI TR-03123 kleiner gleich 105 Zeichen.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "examples": [
+                "Berlin",
+                "Hamburg",
+                "Lüneburg",
+                "Mannheim"
+            ]
+        },
+        "kommunikation": {
+            "title": "Kommunikation (wenig, ohne De-Mail)",
+            "description": "G60000183. In dieser Datenfeldgruppe wird per Regel gefordert, dass mindestens eine Kommunikationsmöglichkeit angegeben werden muss. Falls es gewünscht ist, dass keine Kommunikationsmöglichkeit angegeben werden braucht, muss die ganze Feldgruppe bei der Verwendung optional gesetzt werden.",
+            "type": "object",
+            "properties": {
+                "telefon": {"$ref": "#/definitions/telefon"},
+                "telefax": {"$ref": "#/definitions/telefax"},
+                "email": {"$ref": "#/definitions/email"}
+            },
+            "required": ["telefon"],
+            "additionalProperties": false
+        },
+        "telefon": {
+            "title": "Telefon",
+            "description": "Basierend auf F60000240. Dieses Feld wurde angelehnt an ITU E.123. Eine Prüfung über ein Pattern erfolgt nicht, um den Eingebenden nicht zu überfordern.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 23,
+            "examples": [
+                "+491234342567",
+                "01718765463"
+            ]
+        },
+        "telefax": {
+            "title": "Telefax",
+            "description": "Basierened auf F60000241. Dieses Feld wurde angelehnt an ITU E.123. Eine Prüfung über ein Pattern erfolgt nicht, um den Eingebenden nicht zu überfordern.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 23,
+            "examples": [
+                "+4917112345678",
+                "00493012345678",
+                "030123456789"
+            ]
+        },
+        "email": {
+            "title": "E-Mail",
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 254,
+            "pattern": "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{1,63}$",
+            "description": "Basiert auf F60000242",
+            "examples": [
+                "example@test.de",
+                "beispiel@demo.com"
+            ]
+        },
+        "antragstellendePerson": {
+            "title": "Antragsstellende Person (PAuswG)",
+            "type": "object",
+            "properties": {
+                "vornamen": {"$ref": "#/definitions/vornamen"},
+                "familienname": {"$ref": "#/definitions/familienname"},
+                "geburtsdatum": {"$ref": "#/definitions/geburtsdatum"},
+                "anschrift": {"$ref": "#/definitions/anschrift"}
+            },
+            "required": [
+                "vornamen",
+                "familienname",
+                "geburtsdatum",
+                "anschrift"
+            ],
+            "description": "Basiert auf G17007419",
+            "additionalProperties": false
+        },
+        "upload": {
+            "type": "object",
+            "properties": {
+                "documentId": {"$ref": "#/definitions/documentId"},
+                "originalName": {"$ref": "#/definitions/originalName"},
+                "size": {"$ref": "#/definitions/size"},
+                "type": {"$ref": "#/definitions/mimeType"}
+            },
+            "required": [
+                "originalName",
+                "size",
+                "type",
+                "documentId"
+            ],
+            "additionalProperties": true
+        },
+        "documentId": {
+            "type": "string",
+            "title": "Eindeutige ID des hochgeladenen Dokumentes",
+            "description": "Eindeutige ID des hochgeladenen Dokumentes zur Identifikation in den Anhängen",
+            "examples": ["c8859076-76de-41b4-914c-048f84cd9685"]
+        },
+        "originalName": {
+            "type": "string",
+            "title": "Originaler Dateiname",
+            "description": "Enthält den Dateinamen, der Ursprünglich von Antragsteller hochgeladenen Datei.",
+            "examples": [
+                "nachweis.jpg",
+                "betreuerausweis.pdf",
+                "vorsorgevollmacht.png"
+            ]
+        },
+        "mimeType": {
+            "type": "string",
+            "title": "Mime Type",
+            "examples": [
+                "application/pdf",
+                "image/gif",
+                "image/jpeg",
+                "image/png"
+            ]
+        },
+        "size": {
+            "type": "integer",
+            "title": "Größe der Datei",
+            "description": "Enthält die Größe der Datein in Byte",
+            "examples": [
+                1,
+                1254678,
+                124
+            ]
+        }
+    }
+}
+
