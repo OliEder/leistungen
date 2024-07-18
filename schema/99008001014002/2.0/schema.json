@@ -30,8 +30,7 @@
         "handelndePerson",
         "antragstellendePerson",
         "dokument",
-        "meldung",
-        "willensbekundung"
+        "meldung"
     ],
     "definitions": {
         "status": {
